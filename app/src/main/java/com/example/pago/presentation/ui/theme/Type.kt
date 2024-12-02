@@ -1,4 +1,4 @@
-package com.example.pago.ui.theme
+package com.example.pago.presentation.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
