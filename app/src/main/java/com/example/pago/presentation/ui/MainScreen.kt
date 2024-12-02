@@ -1,6 +1,7 @@
 package com.example.pago.presentation.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -62,6 +64,7 @@ fun MainScreen(
                 itemsIndexed(personItems) { index, person ->
                     PersonTile(
                         person = person,
+                        showLogo = index % 2 == 0,
                         onPersonClicked = onPersonClicked
                     )
                     if (index < personItems.size - 1) {
@@ -107,32 +110,58 @@ fun NoItemsHomeScreen(onClickRefresh: () -> Unit) {
 @Composable
 fun PersonTile(
     person: PersonItem,
+    showLogo: Boolean,
     onPersonClicked: (person: PersonItem) -> Unit
 ) {
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 20.dp, horizontal = 10.dp)
+            .padding(vertical = 30.dp, horizontal = 20.dp)
             .height(80.dp)
             .clickable { onPersonClicked(person) },
         verticalAlignment = Alignment.CenterVertically
     ) {
         val url = IMAGE_URL
 
-        Image(
-            painter = rememberAsyncImagePainter(
-                model = url,
-                placeholder = painterResource(id = R.drawable.ic_person_generic),
-                fallback = painterResource(id = R.drawable.ic_person_generic),
-                error = painterResource(id = R.drawable.ic_person_generic)
-            ), contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .clip(CircleShape)
-                .fillMaxHeight()
-                .aspectRatio(1.0f)
-        )
+        if (showLogo) {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = url,
+                    placeholder = painterResource(id = R.drawable.ic_person_generic),
+                    fallback = painterResource(id = R.drawable.ic_person_generic),
+                    error = painterResource(id = R.drawable.ic_person_generic)
+                ), contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .fillMaxHeight()
+                    .aspectRatio(1.0f)
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .clip(CircleShape)
+                    .background(Color.DarkGray)
+                    .aspectRatio(1.0f)
+            ) {
+                val initials = person.name
+                    .split(' ')
+                    .mapNotNull { it.firstOrNull()?.toString() }
+                    .reduce { acc, s -> if (acc.length < 2) acc + s else acc }
+                Text(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentHeight(align = Alignment.CenterVertically)
+                        .clip(CircleShape),
+                    textAlign = TextAlign.Center,
+                    text = initials,
+                    fontSize = 24.sp
+                )
+            }
+        }
+
         Spacer(Modifier.size(10.dp))
         Text(
             maxLines = 1,
@@ -141,7 +170,7 @@ fun PersonTile(
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Start,
             modifier = Modifier,
-            fontSize = 22.sp
+            fontSize = 20.sp
         )
         Spacer(
             Modifier
@@ -171,7 +200,12 @@ private fun PersonTilePreview() {
         gender = "Female",
         email = "example@google.com"
     )
-    PersonTile(person = person) {
+    Column {
+        PersonTile(person = person, true) {
 
+        }
+        PersonTile(person = person, false) {
+
+        }
     }
 }
