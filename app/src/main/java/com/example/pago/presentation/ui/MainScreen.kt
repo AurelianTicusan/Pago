@@ -44,6 +44,7 @@ import com.example.pago.presentation.state.PersonItem
 @Composable
 fun MainScreen(
     personItems: List<PersonItem>,
+    onClickRefresh: () -> Unit,
     onPersonClicked: (person: PersonItem) -> Unit
 ) {
     Surface(
@@ -51,7 +52,7 @@ fun MainScreen(
         color = MaterialTheme.colorScheme.background
     ) {
         if (personItems.isEmpty()) {
-            NoItemsHomeScreen { }
+            NoItemsHomeScreen { onClickRefresh.invoke() }
         } else {
             LazyColumn(
                 modifier = Modifier
@@ -79,28 +80,22 @@ fun MainScreen(
 
 @Composable
 fun NoItemsHomeScreen(onClickRefresh: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
+        Text(
+            text = stringResource(R.string.home_screen_no_items_label),
+            textAlign = TextAlign.Center,
+            fontSize = 20.sp
+        )
         Image(
-            modifier = Modifier.fillMaxSize(),
             painter = painterResource(id = R.drawable.ic_empty_items),
             contentDescription = null
         )
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = stringResource(R.string.home_screen_no_items_label),
-                textAlign = TextAlign.Center,
-                fontSize = 20.sp
-            )
-            Button(onClick = onClickRefresh) {
-                Text(text = stringResource(R.string.refresh_label))
-            }
+        Button(onClick = onClickRefresh) {
+            Text(text = stringResource(R.string.refresh_label))
         }
     }
 }

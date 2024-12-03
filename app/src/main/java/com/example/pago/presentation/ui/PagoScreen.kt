@@ -2,11 +2,13 @@
 
 package com.example.pago.presentation.ui
 
-import android.util.Log
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,9 +21,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -49,7 +56,8 @@ object Navigation {
 
     sealed class Route(val ordinal: Int, val route: String) {
         data object Start : Route(0, START_ROUTE)
-        data object PersonDetails : Route(1, "$PERSON_DETAILS_ROUTE/{$PERSON_ID}/{$PERSON_NAME}/{$PERSON_EMAIL}") {
+        data object PersonDetails :
+            Route(1, "$PERSON_DETAILS_ROUTE/{$PERSON_ID}/{$PERSON_NAME}/{$PERSON_EMAIL}") {
             fun createRoute(personId: Int, personName: String, personEmail: String) =
                 "PersonDetails/$personId/$personName/$personEmail"
 
@@ -135,8 +143,6 @@ fun PagoApp(
         val uiState: State<UiState<List<PersonItem>>> =
             homeViewModel.personsState.collectAsState()
 
-        Log.d("ababa", "PagoApp: " + uiState)
-
         NavHost(
             navController = navController,
             startDestination = Navigation.Route.Start.route,
@@ -148,17 +154,22 @@ fun PagoApp(
                 route = Navigation.Route.Start.route
             ) {
                 when (val state = uiState.value) {
-                    is UiState.Loading -> {}
+                    is UiState.Loading -> {
+                        MainScreenLoading()
+                    }
 
                     is UiState.Loaded -> {
-                        MainScreen(state.data) {
-                            val route = Navigation.Route.PersonDetails.createRoute(it.id, it.name, it.email)
+                        MainScreen(
+                            state.data,
+                            onClickRefresh = { homeViewModel.refresh() }) {
+                            val route =
+                                Navigation.Route.PersonDetails.createRoute(it.id, it.name, it.email)
                             navController.navigate(route)
                         }
                     }
 
                     is UiState.Error -> {
-
+                        MainScreenErrorLoading()
                     }
                 }
 
@@ -170,8 +181,38 @@ fun PagoApp(
                 val personId = backStackEntry?.arguments?.run { getInt(PERSON_ID) } ?: -1
                 val personName = backStackEntry?.arguments?.run { getString(PERSON_NAME) } ?: ""
                 val personEmail = backStackEntry?.arguments?.run { getString(PERSON_EMAIL) } ?: ""
-                PersonDetailsScreen(id = personId, personName = personName, personEmail = personEmail)
+                PersonDetailsScreen(
+                    id = personId,
+                    personName = personName,
+                    personEmail = personEmail
+                )
             }
         }
+    }
+}
+
+@Composable
+fun MainScreenLoading() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+    }
+}
+
+@Composable
+fun MainScreenErrorLoading() {
+    Column(
+        modifier = Modifier
+            .padding(20.dp)
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            color = Color.Red,
+            text = stringResource(
+                R.string.person_posts_error_loading
+            ),
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
     }
 }

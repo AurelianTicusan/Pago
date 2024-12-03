@@ -28,6 +28,12 @@ class HomeViewModel @Inject constructor(
         personsDisposable = getPersons()
     }
 
+    fun refresh() {
+        _personsState.value = UiState.Loading()
+        personsDisposable?.apply { if (isDisposed.not()) dispose() }
+        personsDisposable = getPersons()
+    }
+
     private fun getPersons() = getActivePersonsUseCase.execute()
         .subscribeBy(
             onSuccess = { people ->
