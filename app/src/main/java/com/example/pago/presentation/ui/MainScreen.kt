@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -69,7 +68,7 @@ fun MainScreen(
                     if (index < personItems.size - 1) {
                         HorizontalDivider(
                             thickness = 2.dp,
-                            color = Color.Gray
+                            color = Color.LightGray
                         )
                     }
                 }
@@ -115,35 +114,29 @@ fun PersonTile(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onPersonClicked(person) }
             .padding(vertical = 30.dp, horizontal = 20.dp)
-            .height(80.dp)
-            .clickable { onPersonClicked(person) },
+            .height(70.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (showLogo) PersonLogo() else PersonInitials(person)
-        Spacer(Modifier.size(10.dp))
         Text(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             text = person.name,
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Start,
-            modifier = Modifier,
-            fontSize = 20.sp
-        )
-        Spacer(
-            Modifier
+            fontSize = 20.sp,
+            modifier = Modifier
                 .weight(1f)
-                .fillMaxHeight()
+                .padding(start = 15.dp, end = 5.dp)
         )
         Image(
             painter = painterResource(R.drawable.ic_chevron), contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .padding(vertical = 20.dp)
-                .clip(CircleShape)
-                .fillMaxHeight()
-                .aspectRatio(1.0f)
+                .size(25.dp)
         )
     }
 }
@@ -154,7 +147,7 @@ private fun PersonInitials(person: PersonItem) {
         modifier = Modifier
             .fillMaxHeight()
             .clip(CircleShape)
-            .background(Color.DarkGray)
+            .background(Color.Gray)
             .aspectRatio(1.0f)
     ) {
         val initials = person.name
@@ -162,13 +155,14 @@ private fun PersonInitials(person: PersonItem) {
             .mapNotNull { it.firstOrNull()?.toString() }
             .reduce { acc, s -> if (acc.length < 2) acc + s else acc }
         Text(
+            textAlign = TextAlign.Center,
+            text = initials,
+            color = Color.White,
+            fontSize = 24.sp,
             modifier = Modifier
                 .fillMaxSize()
                 .wrapContentHeight(align = Alignment.CenterVertically)
-                .clip(CircleShape),
-            textAlign = TextAlign.Center,
-            text = initials,
-            fontSize = 24.sp
+                .clip(CircleShape)
         )
     }
 }

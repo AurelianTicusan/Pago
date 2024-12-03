@@ -92,7 +92,8 @@ private fun PersonDetailsHeader(personName: String, personEmail: String) {
             text = personName,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier,
-            fontSize = 16.sp
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
         )
         Text(
             maxLines = 1,
@@ -141,8 +142,8 @@ fun PersonPosts(posts: List<PostItem>) {
             )
             if (index < posts.size - 1) {
                 HorizontalDivider(
-                    thickness = 2.dp,
-                    color = Color.Black
+                    thickness = 5.dp,
+                    color = Color.Transparent
                 )
             }
         }
@@ -158,8 +159,8 @@ fun PostTile(
         modifier = Modifier
             .background(color = Gray10)
             .fillMaxWidth()
-            .padding(20.dp)
             .clickable { onPostClicked(postItem) }
+            .padding(20.dp)
     ) {
         Text(
             maxLines = 1,
