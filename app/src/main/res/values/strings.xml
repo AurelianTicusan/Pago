@@ -3,4 +3,7 @@
     <string name="back_button">Back</string>
     <string name="refresh_label">Refresh</string>
     <string name="home_screen_no_items_label">There are no items available. Please try to refresh the page.</string>
+    <string name="person_no_items_label">This person has no posts yet</string>
+    <string name="person_posts_error_loading">There was an error retrieving posts from this person.</string>
+
 </resources>

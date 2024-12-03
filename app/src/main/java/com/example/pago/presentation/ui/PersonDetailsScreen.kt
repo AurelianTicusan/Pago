@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -27,7 +29,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -110,7 +114,7 @@ private fun PersonDetailsHeader(personName: String, personEmail: String) {
 fun PersonDetailsPosts(personDetailsViewModel: PersonDetailsViewModel) {
     when (val state = personDetailsViewModel.postsState.collectAsState().value) {
         is UiState.Loading -> {
-
+            PersonPostsLoading()
         }
 
         is UiState.Loaded -> {
@@ -118,7 +122,7 @@ fun PersonDetailsPosts(personDetailsViewModel: PersonDetailsViewModel) {
         }
 
         is UiState.Error -> {
-
+            PersonPostsErrorLoading()
         }
     }
 }
@@ -126,25 +130,29 @@ fun PersonDetailsPosts(personDetailsViewModel: PersonDetailsViewModel) {
 @Composable
 fun PersonPosts(posts: List<PostItem>) {
     val context = LocalContext.current
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        itemsIndexed(posts) { index, post ->
-            PostTile(
-                postItem = post,
-                onPostClicked = {
-                    val message = "Clicked on post number ${post.id}"
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                }
-            )
-            if (index < posts.size - 1) {
-                HorizontalDivider(
-                    thickness = 5.dp,
-                    color = Color.Transparent
+    if (posts.isEmpty()) {
+        NoPersonPostsScreen()
+    } else {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            itemsIndexed(posts) { index, post ->
+                PostTile(
+                    postItem = post,
+                    onPostClicked = {
+                        val message = "Clicked on post number ${post.id}"
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    }
                 )
+                if (index < posts.size - 1) {
+                    HorizontalDivider(
+                        thickness = 5.dp,
+                        color = Color.Transparent
+                    )
+                }
             }
         }
     }
@@ -180,6 +188,46 @@ fun PostTile(
             modifier = Modifier,
             lineHeight = 18.sp,
             fontSize = 14.sp
+        )
+    }
+}
+
+@Composable
+fun NoPersonPostsScreen() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(R.string.person_no_items_label),
+            textAlign = TextAlign.Center,
+            fontSize = 20.sp
+        )
+    }
+}
+
+@Composable
+fun PersonPostsLoading() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+    }
+}
+
+@Composable
+fun PersonPostsErrorLoading() {
+    Column(
+        modifier = Modifier
+            .padding(20.dp)
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            color = Color.Red,
+            text = stringResource(
+                R.string.person_posts_error_loading
+            ),
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
         )
     }
 }
