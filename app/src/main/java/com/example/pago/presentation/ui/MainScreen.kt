@@ -51,7 +51,6 @@ fun MainScreen(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-
         if (personItems.isEmpty()) {
             NoItemsHomeScreen { }
         } else {
@@ -113,7 +112,6 @@ fun PersonTile(
     showLogo: Boolean,
     onPersonClicked: (person: PersonItem) -> Unit
 ) {
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -122,46 +120,7 @@ fun PersonTile(
             .clickable { onPersonClicked(person) },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val url = IMAGE_URL
-
-        if (showLogo) {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    model = url,
-                    placeholder = painterResource(id = R.drawable.ic_person_generic),
-                    fallback = painterResource(id = R.drawable.ic_person_generic),
-                    error = painterResource(id = R.drawable.ic_person_generic)
-                ), contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .fillMaxHeight()
-                    .aspectRatio(1.0f)
-            )
-        } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .clip(CircleShape)
-                    .background(Color.DarkGray)
-                    .aspectRatio(1.0f)
-            ) {
-                val initials = person.name
-                    .split(' ')
-                    .mapNotNull { it.firstOrNull()?.toString() }
-                    .reduce { acc, s -> if (acc.length < 2) acc + s else acc }
-                Text(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .wrapContentHeight(align = Alignment.CenterVertically)
-                        .clip(CircleShape),
-                    textAlign = TextAlign.Center,
-                    text = initials,
-                    fontSize = 24.sp
-                )
-            }
-        }
-
+        if (showLogo) PersonLogo() else PersonInitials(person)
         Spacer(Modifier.size(10.dp))
         Text(
             maxLines = 1,
@@ -189,6 +148,48 @@ fun PersonTile(
     }
 }
 
+@Composable
+private fun PersonInitials(person: PersonItem) {
+    Box(
+        modifier = Modifier
+            .fillMaxHeight()
+            .clip(CircleShape)
+            .background(Color.DarkGray)
+            .aspectRatio(1.0f)
+    ) {
+        val initials = person.name
+            .split(' ')
+            .mapNotNull { it.firstOrNull()?.toString() }
+            .reduce { acc, s -> if (acc.length < 2) acc + s else acc }
+        Text(
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentHeight(align = Alignment.CenterVertically)
+                .clip(CircleShape),
+            textAlign = TextAlign.Center,
+            text = initials,
+            fontSize = 24.sp
+        )
+    }
+}
+
+@Composable
+private fun PersonLogo() {
+    val url = IMAGE_URL
+    Image(
+        painter = rememberAsyncImagePainter(
+            model = url,
+            placeholder = painterResource(id = R.drawable.ic_person_generic),
+            fallback = painterResource(id = R.drawable.ic_person_generic),
+            error = painterResource(id = R.drawable.ic_person_generic)
+        ), contentDescription = null,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+            .clip(CircleShape)
+            .fillMaxHeight()
+            .aspectRatio(1.0f)
+    )
+}
 
 @Preview
 @Composable

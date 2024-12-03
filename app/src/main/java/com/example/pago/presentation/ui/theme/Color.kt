@@ -2,10 +2,16 @@ package com.example.pago.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val PrimaryDark = Color(0xFFEEEEEE)
+val SecondaryDark = Color(0xFFAAAAAA)
+val TertiaryDark = Color(0xFFBABABA)
+val ContainerDark = Color(0xFF232323)
+val BackgroundDark = Color(0xFF232323)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val PrimaryLight = Color(0xFF000000)
+val SecondaryLight = Color(0xFF808080)
+val TertiaryLight = Color(0xFF999999)
+val ContainerLight = Color(0xFFAAAAAA)
+val BackgroundLight = Color(0xFFAAAAAA)
+
+val Gray10 = Color(0x22808080)

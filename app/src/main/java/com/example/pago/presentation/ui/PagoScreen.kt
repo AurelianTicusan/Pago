@@ -33,6 +33,7 @@ import androidx.navigation.navArgument
 import com.example.pago.R
 import com.example.pago.presentation.state.PersonItem
 import com.example.pago.presentation.state.UiState
+import com.example.pago.presentation.ui.Navigation.Args.PERSON_EMAIL
 import com.example.pago.presentation.ui.Navigation.Args.PERSON_ID
 import com.example.pago.presentation.ui.Navigation.Args.PERSON_NAME
 
@@ -40,6 +41,7 @@ object Navigation {
     object Args {
         const val PERSON_ID = "PERSON_ID"
         const val PERSON_NAME = "PERSON_NAME"
+        const val PERSON_EMAIL = "PERSON_EMAIL"
     }
 
     const val START_ROUTE = "Home"
@@ -47,13 +49,14 @@ object Navigation {
 
     sealed class Route(val ordinal: Int, val route: String) {
         data object Start : Route(0, START_ROUTE)
-        data object PersonDetails : Route(1, "$PERSON_DETAILS_ROUTE/{$PERSON_ID}/{$PERSON_NAME}") {
-            fun createRoute(personId: Int, personName: String) =
-                "PersonDetails/$personId/$personName"
+        data object PersonDetails : Route(1, "$PERSON_DETAILS_ROUTE/{$PERSON_ID}/{$PERSON_NAME}/{$PERSON_EMAIL}") {
+            fun createRoute(personId: Int, personName: String, personEmail: String) =
+                "PersonDetails/$personId/$personName/$personEmail"
 
             fun createArgumentTypes() = listOf(
                 navArgument(PERSON_ID) { type = NavType.IntType },
                 navArgument(PERSON_NAME) { type = NavType.StringType },
+                navArgument(PERSON_EMAIL) { type = NavType.StringType }
             )
         }
 
@@ -129,7 +132,6 @@ fun PagoApp(
     ) { innerPadding ->
 
         val homeViewModel: HomeViewModel = hiltViewModel()
-        homeViewModel.initialize()
         val uiState: State<UiState<List<PersonItem>>> =
             homeViewModel.personsState.collectAsState()
 
@@ -149,9 +151,8 @@ fun PagoApp(
                     is UiState.Loading -> {}
 
                     is UiState.Loaded -> {
-                        Log.d("ababa", "PagoApp: ${state.data}")
                         MainScreen(state.data) {
-                            val route = Navigation.Route.PersonDetails.createRoute(it.id, it.name)
+                            val route = Navigation.Route.PersonDetails.createRoute(it.id, it.name, it.email)
                             navController.navigate(route)
                         }
                     }
@@ -168,7 +169,8 @@ fun PagoApp(
             ) {
                 val personId = backStackEntry?.arguments?.run { getInt(PERSON_ID) } ?: -1
                 val personName = backStackEntry?.arguments?.run { getString(PERSON_NAME) } ?: ""
-//                PersonsDetailsScreen(id = personId, personName = personName)
+                val personEmail = backStackEntry?.arguments?.run { getString(PERSON_EMAIL) } ?: ""
+                PersonDetailsScreen(id = personId, personName = personName, personEmail = personEmail)
             }
         }
     }

@@ -1,14 +1,11 @@
 package com.example.pago.presentation.ui
 
-import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import com.example.pago.domain.usecase.GetPersonsUseCase
+import com.example.pago.domain.usecase.GetActivePersonsUseCase
 import com.example.pago.presentation.mapper.toPersonItem
 import com.example.pago.presentation.state.PersonItem
 import com.example.pago.presentation.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getPersonsUseCase: GetPersonsUseCase
+    private val getActivePersonsUseCase: GetActivePersonsUseCase
 ) : ViewModel() {
 
     private val _personsState: MutableStateFlow<UiState<List<PersonItem>>> =
@@ -27,33 +24,16 @@ class HomeViewModel @Inject constructor(
 
     private var personsDisposable: Disposable? = null
 
-    fun initialize() {
-        Log.d("ababa", "initialize: ")
-        val list = mutableStateListOf<PersonItem>().apply {
-            repeat(12) {
-                add(PersonItem(it, "Person Number $it", "", "", "active"))
-            }
-        }
-        personsDisposable = Single.just(list)
-            .subscribeBy(
-                onSuccess = { people ->
-                    Log.d("ababa", "getPersons: " + people)
-                    _personsState.value = UiState.Loaded(people)
-                },
-                onError = {
-                    Log.d("ababa", "getPersons: " + it)
-                    _personsState.value = UiState.Error(it.localizedMessage)
-                })
+    init {
+        personsDisposable = getPersons()
     }
 
-    private fun getPersons() = getPersonsUseCase.execute()
+    private fun getPersons() = getActivePersonsUseCase.execute()
         .subscribeBy(
             onSuccess = { people ->
-                Log.d("ababa", "getPersons: " + people)
                 _personsState.value = UiState.Loaded(people.map { it.toPersonItem() })
             },
             onError = {
-                Log.d("ababa", "getPersons: " + it)
                 _personsState.value = UiState.Error(it.localizedMessage)
             }
         )
