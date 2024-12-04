@@ -14,5 +14,4 @@ val TertiaryLight = Color(0xFF999999)
 val ContainerLight = Color(0xFFEEEEEE)
 val BackgroundLight = Color(0xFFEEEEEE)
 
-val Gray = Color(0xFF808080)
 val Gray10 = Color(0x22808080)
