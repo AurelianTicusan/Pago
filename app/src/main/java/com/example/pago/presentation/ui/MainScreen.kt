@@ -73,7 +73,7 @@ private fun ContactsHeader() {
         fontSize = 20.sp,
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.LightGray)
+            .background(Color.Gray)
             .padding(horizontal = 20.dp, vertical = 10.dp)
     )
 }
